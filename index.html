@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>France Masters 2027</title>
+<meta name="description" content="Interactive dashboard of Études en France master's and engineering programmes for an embedded / biomedical engineer, re-verified against the live catalogue.">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f6f5f2; --surface:#ffffff; --surface-2:#f0efec; --border:#e2e0da;
+  --text:#121211; --text-2:#52514e; --muted:#7a7873;
+  --accent:#2a78d6; --accent-soft:#e3eefb; --accent-ink:#1c5cab;
+  --good:#0a7d0a; --good-soft:#e2f4e2;
+  --warn:#9a6400; --warn-soft:#fdf1d6; --warn-dot:#fab219;
+  --bad:#b42f2f; --bad-soft:#fbe5e5; --bad-dot:#d03b3b;
+  --info:#52514e; --info-soft:#efeeea;
+  --bar:#2a78d6; --shadow:0 1px 2px rgba(0,0,0,.05),0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#33322f;
+    --text:#f4f3ee; --text-2:#c3c2b7; --muted:#8f8d85;
+    --accent:#3987e5; --accent-soft:#1d2c40; --accent-ink:#86b6ef;
+    --good:#5fcf5f; --good-soft:#18301a;
+    --warn:#f4c050; --warn-soft:#3a2e12; --warn-dot:#fab219;
+    --bad:#f08a8a; --bad-soft:#3d1d1d; --bad-dot:#e66767;
+    --info:#c3c2b7; --info-soft:#2a2a28;
+    --bar:#3987e5; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#33322f;
+  --text:#f4f3ee; --text-2:#c3c2b7; --muted:#8f8d85;
+  --accent:#3987e5; --accent-soft:#1d2c40; --accent-ink:#86b6ef;
+  --good:#5fcf5f; --good-soft:#18301a;
+  --warn:#f4c050; --warn-soft:#3a2e12; --warn-dot:#fab219;
+  --bad:#f08a8a; --bad-soft:#3d1d1d; --bad-dot:#e66767;
+  --info:#c3c2b7; --info-soft:#2a2a28;
+  --bar:#3987e5; --shadow:none;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent-ink)}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px}
+header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.top{display:flex;align-items:center;gap:12px;padding:12px 0;flex-wrap:wrap}
+.top h1{font-size:18px;margin:0;font-weight:650;letter-spacing:-.01em}
+.top .sub{color:var(--muted);font-size:13px}
+.top .spacer{flex:1}
+.countdown{font-size:13px;background:var(--accent-soft);color:var(--accent-ink);padding:4px 10px;border-radius:999px;font-weight:600;white-space:nowrap}
+.iconbtn{border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:6px 10px;cursor:pointer}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav.tabs button{border:0;background:none;padding:10px 12px;cursor:pointer;color:var(--text-2);border-bottom:2px solid transparent;white-space:nowrap;font-weight:550}
+nav.tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+nav.tabs .count{background:var(--surface-2);border-radius:999px;padding:0 7px;font-size:12px;margin-left:4px}
+main{padding:20px 0 60px}
+section[hidden]{display:none}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.muted{color:var(--muted)} .small{font-size:13px}
+h2{font-size:20px;margin:0 0 4px} h3{font-size:16px;margin:0 0 8px}
+
+/* presets */
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.preset{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;font-weight:550}
+.preset[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.searchrow{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.searchrow input[type=search]{flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.toggle{display:flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer;font-weight:600;white-space:nowrap;user-select:none}
+.toggle input{width:18px;height:18px;accent-color:var(--accent);margin:0}
+.toggle:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.searchrow select{padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.layout{display:grid;grid-template-columns:270px 1fr;gap:18px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:1fr} .filters{display:none} .filters.open{display:block}}
+.filtertoggle{display:none}
+@media (max-width:900px){.filtertoggle{display:inline-block}}
+.filters{padding:14px;position:sticky;top:112px;max-height:calc(100vh - 130px);overflow:auto}
+.fgroup{border-top:1px solid var(--border);padding:12px 0}
+.fgroup:first-child{border-top:0;padding-top:0}
+.fgroup h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.fgroup label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer;font-size:14px}
+.fgroup label .n{margin-left:auto;color:var(--muted);font-size:12px}
+.fgroup input[type=range]{width:100%}
+.reset{width:100%;margin-top:8px}
+
+.resultbar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.resultbar .n{font-weight:650}
+.list{display:grid;gap:10px}
+.prog{padding:14px 16px;cursor:pointer;transition:border-color .15s}
+.prog:hover{border-color:var(--accent)}
+.prog .row1{display:flex;gap:10px;align-items:flex-start}
+.prog .ttl{font-weight:650;font-size:15.5px;line-height:1.35}
+.prog .fr{color:var(--muted);font-size:12.5px;margin-top:2px}
+.prog .where{color:var(--text-2);font-size:13.5px;margin-top:4px}
+.star{margin-left:auto;border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:var(--muted);padding:2px 4px}
+.star.on{color:#e0a100}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{font-size:12.5px;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--text-2);white-space:nowrap}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.m2{background:var(--accent-soft);color:var(--accent-ink)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.fee{font-weight:650;color:var(--text);background:var(--surface-2)}
+.stars{color:#e0a100;letter-spacing:1px;font-size:12.5px}
+.warns{margin-top:10px;display:grid;gap:4px}
+.w{display:flex;gap:7px;align-items:flex-start;font-size:13px;line-height:1.4;padding:5px 9px;border-radius:7px}
+.w .ic{flex:none;font-weight:700;width:16px;text-align:center}
+.w.high{background:var(--bad-soft);color:var(--bad)}
+.w.med{background:var(--warn-soft);color:var(--warn)}
+.w.info{background:var(--info-soft);color:var(--info)}
+.more{display:block;margin:16px auto 0;padding:10px 20px}
+.btn{border:1px solid var(--border);background:var(--surface);border-radius:9px;padding:8px 14px;cursor:pointer;font-weight:550}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+
+/* drawer */
+dialog{border:0;padding:0;border-radius:14px;max-width:760px;width:calc(100% - 24px);max-height:calc(100vh - 32px);background:var(--surface);color:var(--text)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dlg{padding:20px 22px}
+.dlg .close{position:sticky;top:0;float:right;font-size:22px}
+.kv{display:grid;grid-template-columns:170px 1fr;gap:6px 14px;font-size:14px;margin:14px 0}
+@media (max-width:600px){.kv{grid-template-columns:1fr}.kv dt{margin-top:6px}}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+.tablewrap{overflow-x:auto}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.links a{text-decoration:none}
+
+/* overview */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+.tile{padding:14px 16px}
+.tile .v{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.tile .l{color:var(--text-2);font-size:13.5px;margin-top:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.chart{padding:16px}
+.hbar{display:grid;grid-template-columns:minmax(120px,210px) 1fr 44px;gap:8px;align-items:center;padding:3px 4px;border-radius:6px;cursor:pointer;font-size:13px}
+.hbar:hover,.hbar:focus-visible{background:var(--surface-2);outline:none}
+.hbar .track{height:14px;position:relative}
+.hbar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--bar);border-radius:0 4px 4px 0;min-width:2px}
+.hbar .val{text-align:right;color:var(--text-2);font-variant-numeric:tabular-nums}
+.hbar .lab{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.callout{padding:14px 16px;border-left:4px solid var(--accent);margin-bottom:16px}
+.callout.bad{border-left-color:var(--bad-dot)}
+.callout.warn{border-left-color:var(--warn-dot)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.steps li{counter-increment:s;padding:14px 16px 14px 56px;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+.tracker select{padding:4px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.tracker input{width:100%;min-width:140px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;margin:6px 0 12px}
+footer{color:var(--muted);font-size:12.5px;text-align:center;padding:20px 16px 40px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>🇫🇷 France Master's 2027</h1>
+        <div class="sub" id="subtitle"></div>
+      </div>
+      <div class="spacer"></div>
+      <span class="countdown" id="countdown"></span>
+      <button class="iconbtn" id="themeBtn" title="Switch light / dark" aria-label="Switch light or dark theme">◐</button>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="find" aria-selected="true">🔎 Find programs</button>
+      <button role="tab" data-tab="short">⭐ My shortlist <span class="count" id="shortCount">0</span></button>
+      <button role="tab" data-tab="overview">📊 Overview</button>
+      <button role="tab" data-tab="fees">💶 Fees &amp; exemptions</button>
+      <button role="tab" data-tab="apply">🧭 How to apply</button>
+      <button role="tab" data-tab="checks">✅ What was checked</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- FIND -->
+  <section id="tab-find">
+    <div class="presets" id="presets">
+      <button class="preset" data-preset="best" aria-pressed="true">⭐ Best for me</button>
+      <button class="preset" data-preset="english">🇬🇧 English-taught &amp; affordable</button>
+      <button class="preset" data-preset="bio">🫀 Biomedical / EEG / health tech</button>
+      <button class="preset" data-preset="embedded">🔌 Embedded &amp; electronics</button>
+      <button class="preset" data-preset="all">Show everything</button>
+    </div>
+    <div class="searchrow">
+      <input type="search" id="q" placeholder="Search title, university, city… (e.g. embedded, Grenoble, signal)" aria-label="Search">
+      <label class="toggle" title="Show only programs taught fully in English"><input type="checkbox" id="engOnly"> 🇬🇧 English only</label>
+      <label class="toggle" title="Also include programs taught in French and English"><input type="checkbox" id="engBi"> + bilingual FR/EN</label>
+      <select id="sort" aria-label="Sort by">
+        <option value="score">Sort: best match</option>
+        <option value="fee">Sort: cheapest per year</option>
+        <option value="total">Sort: cheapest total</option>
+        <option value="rel">Sort: most relevant</option>
+        <option value="warn">Sort: fewest warnings</option>
+        <option value="uni">Sort: university A–Z</option>
+      </select>
+      <button class="btn filtertoggle" id="filterToggle">Filters</button>
+    </div>
+    <div class="layout">
+      <aside class="card filters" id="filters"></aside>
+      <div>
+        <div class="resultbar">
+          <span><span class="n" id="nRes">0</span> <span class="muted">programs match</span></span>
+          <span class="muted small" id="activeHint"></span>
+          <span style="flex:1"></span>
+          <button class="btn" id="exportRes">⬇ Export CSV</button>
+        </div>
+        <div class="list" id="list"></div>
+        <button class="btn more" id="moreBtn" hidden>Show more</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHORTLIST -->
+  <section id="tab-short" hidden>
+    <h2>My shortlist</h2>
+    <p class="muted small">Tap ☆ on any program to add it here. Your list and notes are saved in this browser only. Export to keep a copy.</p>
+    <div class="searchrow"><button class="btn" id="exportShort">⬇ Export shortlist CSV</button><button class="btn" id="clearShort">Clear shortlist</button></div>
+    <div class="card tablewrap tracker" id="shortTable"></div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section id="tab-overview" hidden>
+    <div class="tiles" id="tiles"></div>
+    <div class="grid2">
+      <div class="card chart">
+        <h3>Programs you can apply to, by field</h3>
+        <p class="muted small" style="margin-top:-4px">Open in EEF and eligible (M1, M2 or MS). Click a bar to see them.</p>
+        <div id="chartField" role="list"></div>
+      </div>
+      <div class="card chart">
+        <h3>Estimated tuition per year (non-EU)</h3>
+        <p class="muted small" style="margin-top:-4px">Same programs. Click a bar to filter by that price range.</p>
+        <div id="chartFee" role="list"></div>
+      </div>
+      <div class="card chart">
+        <h3>Most common warnings</h3>
+        <p class="muted small" style="margin-top:-4px">Across all 999 listings. Click to see affected programs.</p>
+        <div id="chartWarn" role="list"></div>
+      </div>
+      <div class="card chart">
+        <h3>Cities with the most options for you</h3>
+        <p class="muted small" style="margin-top:-4px">Open + eligible programs. Click to search that city.</p>
+        <div id="chartCity" role="list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEES -->
+  <section id="tab-fees" hidden>
+    <div class="card callout">
+      <h3>The fee rules (verified 9 Oct 2026 on official pages)</h3>
+      <ul style="margin:0;padding-left:18px">
+        <li><b>Public university master, non-EU:</b> €3,950/yr in 2026-27 (EU students pay €255). Licence €2,902. <a href="https://www.service-public.gouv.fr/particuliers/actualites/A18927" target="_blank" rel="noopener">service-public.gouv.fr</a></li>
+        <li><b>Exemptions are capped</b> by Decree 2026-385 (19 May 2026): max 30% of non-EU students in 2026-27, <b>25% in 2027-28 (your intake)</b>, 20% after. Treat €255 as a bonus, budget €3,950.</li>
+        <li><b>Public engineering schools (Diplôme d'ingénieur):</b> EU rate €630. Most schools charge non-EU students €3,950 for the engineering cycle (e.g. <a href="https://inscription.insa-toulouse.fr/fr/s-inscrire/tarifs-et-droits-d-inscription.html" target="_blank" rel="noopener">INSA Toulouse</a>, <a href="https://enim.univ-lorraine.fr/droits-differencies" target="_blank" rel="noopener">ENIM</a>); a few (e.g. Tours) do not.</li>
+        <li><b>2027-28 amounts are not published yet</b> – fees usually rise slightly with inflation. All figures here are 2026-27.</li>
+        <li>Extra every year: CVEC ≈ €105, living costs €700–1,100/month (visa proof of funds ≈ €615/month).</li>
+      </ul>
+    </div>
+    <div class="card callout bad">
+      <h3>⚠ Changed since your spreadsheet</h3>
+      <ul style="margin:0;padding-left:18px">
+        <li><b>Université Paris Cité</b>: exempted non-EU master students in 2026-27, but now says new non-EU students in <b>2027-28 may pay €3,950</b>. <a href="https://u-paris.fr/droits-dinscription-tarifs-exonerations/" target="_blank" rel="noopener">Source</a></li>
+        <li><b>Université Grenoble Alpes</b>: the broad 2026-27 exemptions were a transition year; from 2027-28 requests are assessed on need within the 25% cap.</li>
+        <li><b>Université de Tours</b>: 2027-28 policy published – 25% cap, on request.</li>
+      </ul>
+    </div>
+    <div class="card tablewrap"><table id="policyTable"></table></div>
+  </section>
+
+  <!-- APPLY -->
+  <section id="tab-apply" hidden>
+    <h2>How to apply for September 2027</h2>
+    <p class="muted">Written for: a 4-year bachelor's (Bac+4) with a few years of embedded / biomedical-device experience.</p>
+    <ol class="steps">
+      <li class="card"><b>Now – shortlist 10–15 programs.</b> Start with “Best for me”, star the ones you like. Mix 5–7 safe M1 options with a few M2 / reach programs.</li>
+      <li class="card"><b>Language test.</b> English-taught: IELTS 6.5+ (or TOEFL). French-taught: DELF/TCF B2 – French-taught public masters are the cheapest and most numerous.</li>
+      <li class="card"><b>Documents.</b> Degree + transcripts (attested), CV, experience letters, statement of purpose per program linking your own embedded / biomedical work to its courses, 2 recommendation letters, portfolio (firmware, signal processing).</li>
+      <li class="card"><b>Apply on Études en France</b> (through your country's Campus France office) – open from <b>1 Oct 2026 to 15 Mar 2027</b>. Many programs close earlier in practice – aim to submit by January.</li>
+      <li class="card"><b>Where it says “separate application” – also apply on the school's own site</b> (302 programs need this). Polytech-network programs go through their own portal too.</li>
+      <li class="card"><b>Ask for a fee exemption at the same time as admission</b>, and ask each university whether you'll be enrolled as <i>formation initiale</i> (not continuing education, which costs more after a 2+ year study break).</li>
+      <li class="card"><b>Campus France interview → accept an offer → visa</b> (proof of funds ≈ €615/month, accommodation, insurance).</li>
+    </ol>
+    <div class="card callout warn" style="margin-top:16px">
+      <h3>If your grades are average</h3>
+      <p style="margin:0">French public masters select mostly on grades, so apply widely. Strengthen the file with a sharp statement of purpose, strong experience letters and a good language score. Programs that only open the final year (M2) are a stretch – keep M1 programs as your main options.</p>
+    </div>
+  </section>
+
+  <!-- CHECKS -->
+  <section id="tab-checks" hidden>
+    <h2>What was checked</h2>
+    <div id="checks"></div>
+  </section>
+</main>
+
+<dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
+
+<footer>Data: Études en France catalogue (re-checked <span id="fChecked"></span>) + official university fee pages. Fees and policies change yearly – always confirm on the school website before paying anything.</footer>
+
+<script src="data/programs.js"></script>
+<script>
+(() => {
+const P = window.PROGRAMS, META = window.META;
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur = n => n == null ? "?" : "€" + Number(n).toLocaleString("en-GB");
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+
+/* ---------- theme ---------- */
+const applyTheme = t => { if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; };
+applyTheme(store.get("theme", null));
+$("#themeBtn").onclick = () => {
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const t = dark ? "light" : "dark"; applyTheme(t); store.set("theme", t);
+};
+
+/* ---------- header ---------- */
+const deadline = new Date("2027-03-15T23:59:59");
+const days = Math.ceil((deadline - new Date()) / 864e5);
+$("#countdown").textContent = days > 0 ? `⏳ ${days} days to EEF deadline (15 Mar 2027)` : "EEF deadline passed";
+$("#subtitle").textContent = `${META.count} programs · ${META.verified} re-verified live on Études en France (${META.liveChecked})`;
+$("#fChecked").textContent = META.liveChecked;
+
+/* ---------- labels ---------- */
+const STATUS = {
+  eligible: {t: "✓ You can apply", cls: "good", short: "Eligible (M1 or earlier year)"},
+  m2:       {t: "◐ M2 only – stretch", cls: "m2", short: "M2 entry only (stretch)"},
+  possible: {t: "◐ MS – with experience", cls: "m2", short: "Mastère Spécialisé (with experience)"},
+  closed:   {t: "✕ Closed for 2027", cls: "bad", short: "Closed in EEF"},
+  no:       {t: "✕ Not a fit", cls: "bad", short: "Not a fit (undergrad / PhD)"},
+};
+const WARN_LABEL = {
+  unverified: "Not re-verified on EEF", closed: "Closed for 2027", apprentice: "Apprenticeship (needs French employer)",
+  eurate: "Fee understated (EU rate shown)", paris: "Paris Cité 2027-28 fee change", m1closed: "M1 closed – only M2 open",
+  m2only: "Only M2 entry open", oldfee: "Old 2025-26 fee in catalogue", engfee: "Engineering fee varies (€630–3,950)",
+  lowconf: "Fee is an estimate", unofficialfee: "Fee from 3rd-party site", cheapprivate: "Suspiciously low private fee",
+  langconflict: "English listed but French required?", relevance: "Relevance doubtful", deadweb: "Website didn't load",
+  partclosed: "Some years closed", newsource: "Policy from news site", stale: "Outdated text in catalogue",
+  dup: "Duplicate listing", noweb: "No website", extra: "Separate school application", polytech: "Polytech portal",
+  ms: "MS normally needs Bac+5", expensive: "Tuition over €10k", nolang: "Language not stated"
+};
+const ICON = {high: "⛔", med: "⚠", info: "ℹ"};
+const fields = [...new Set(P.map(p => p.field))].sort();
+const langs = ["English", "French & English", "French"];
+const types = ["Public university", "Public school / institute", "Private / EESPIG", "Apprenticeship (CFA/ITII)"];
+
+/* ---------- score ---------- */
+for (const p of P) {
+  const hi = p.warn.filter(w => w.l === "high").length, md = p.warn.filter(w => w.l === "med").length;
+  const st = {eligible: 40, m2: 12, possible: 8, closed: -100, no: -100}[p.status];
+  const lang = p.lang === "English" ? 10 : p.lang === "French & English" ? 6 : 0;
+  const fee = p.fee == null ? -10 : -Math.min(p.fee, 20000) / 400;
+  p.score = p.rel * 15 + st + lang + fee - hi * 30 - md * 4;
+  p.hay = [p.title, p.en, p.uni, p.inst, p.city, p.site, p.field, p.degree].join(" ").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  p.nHigh = hi; p.nMed = md;
+}
+
+/* ---------- filter state ---------- */
+const DEFAULT = () => ({q: "", status: ["eligible", "m2", "possible"], lang: [...langs], field: [], type: types.slice(0, 3), maxFee: 25000, rel: 3, hideHigh: true, warn: null, feeBand: null});
+const PRESETS = {
+  best: () => ({...DEFAULT(), status: ["eligible"], rel: 4, maxFee: 6000}),
+  english: () => ({...DEFAULT(), lang: ["English", "French & English"], maxFee: 6000}),
+  bio: () => ({...DEFAULT(), field: ["Biomedical / Health tech", "Neuroscience / Neuro-engineering", "Signal / Image / Vision", "Bioinformatics"]}),
+  embedded: () => ({...DEFAULT(), field: ["Embedded systems / Electronics", "IoT / Telecom / Networks", "Sensors / Instrumentation / Micro-Nano / Photonics", "Robotics / Automation / Mechatronics"]}),
+  all: () => ({...DEFAULT(), status: Object.keys(STATUS), type: [...types], rel: 1, hideHigh: false}),
+};
+let S = PRESETS.best(), shown = 30;
+function applyLangToggles() {
+  if ($("#engOnly").checked) S.lang = $("#engBi").checked ? ["English", "French & English"] : ["English"];
+}
+function syncLangToggles() {
+  const l = [...S.lang].sort().join("|");
+  $("#engOnly").checked = l === "English" || l === "English|French & English";
+  $("#engBi").checked = l === "English|French & English";
+  $("#engBi").disabled = !$("#engOnly").checked;
+  $("#engBi").parentElement.style.opacity = $("#engOnly").checked ? 1 : .5;
+}
+let star = new Set(store.get("shortlist", []));
+let notes = store.get("notes", {});
+
+function match(p, s = S) {
+  if (s.warn) return p.warn.some(w => w.c === s.warn);
+  if (!s.status.includes(p.status)) return false;
+  if (!s.lang.includes(p.lang)) return false;
+  if (s.field.length && !s.field.includes(p.field)) return false;
+  if (!s.type.includes(p.type)) return false;
+  if (p.rel < s.rel) return false;
+  if (s.maxFee < 25000 && (p.fee == null || p.fee > s.maxFee)) return false;
+  if (s.feeBand && !(p.fee != null && p.fee >= s.feeBand[0] && p.fee < s.feeBand[1])) return false;
+  if (s.hideHigh && p.nHigh) return false;
+  if (s.q) { const t = s.q.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").split(/\s+/); if (!t.every(x => p.hay.includes(x))) return false; }
+  return true;
+}
+const SORTS = {
+  score: (a, b) => b.score - a.score, fee: (a, b) => (a.fee ?? 1e9) - (b.fee ?? 1e9) || b.score - a.score,
+  total: (a, b) => (a.total ?? 1e9) - (b.total ?? 1e9) || b.score - a.score, rel: (a, b) => b.rel - a.rel || b.score - a.score,
+  warn: (a, b) => (a.nHigh * 10 + a.nMed) - (b.nHigh * 10 + b.nMed) || b.score - a.score, uni: (a, b) => a.uni.localeCompare(b.uni),
+};
+
+/* ---------- filters panel ---------- */
+function checks(name, opts, sel, counts) {
+  return opts.map(o => { const [v, l] = Array.isArray(o) ? o : [o, o];
+    return `<label><input type="checkbox" data-f="${name}" value="${esc(v)}" ${sel.includes(v) ? "checked" : ""}><span>${esc(l)}</span><span class="n">${counts?.[v] ?? ""}</span></label>`; }).join("");
+}
+function renderFilters() {
+  const base = P.filter(p => match(p, {...S, field: [], warn: null}));
+  const fc = {}; base.forEach(p => fc[p.field] = (fc[p.field] || 0) + 1);
+  $("#filters").innerHTML = `
+    <div class="fgroup"><h4>Can I apply?</h4>${checks("status", Object.keys(STATUS).map(k => [k, STATUS[k].short]), S.status)}</div>
+    <div class="fgroup"><h4>Teaching language</h4>${checks("lang", langs, S.lang)}</div>
+    <div class="fgroup"><h4>Max tuition per year</h4>
+      <input type="range" id="maxFee" min="500" max="25000" step="500" value="${S.maxFee}" aria-label="Maximum tuition per year">
+      <div class="small"><b id="maxFeeVal">${S.maxFee >= 25000 ? "Any" : eur(S.maxFee)}</b> ${S.feeBand ? `<span class="muted">· band ${eur(S.feeBand[0])}–${eur(S.feeBand[1])}</span>` : ""}</div></div>
+    <div class="fgroup"><h4>Relevance to your profile</h4>
+      <select id="rel" style="width:100%;padding:6px;border:1px solid var(--border);border-radius:8px;background:var(--surface)">
+        ${[[5,"★★★★★ core fit only"],[4,"★★★★ and up"],[3,"★★★ and up"],[1,"Any"]].map(([v,l]) => `<option value="${v}" ${S.rel==v?"selected":""}>${l}</option>`).join("")}
+      </select></div>
+    <div class="fgroup"><h4>Warnings</h4><label><input type="checkbox" id="hideHigh" ${S.hideHigh ? "checked" : ""}><span>Hide programs with ⛔ serious warnings</span></label></div>
+    <div class="fgroup"><h4>Field</h4>${checks("field", fields, S.field, fc)}<div class="small muted">None ticked = all fields</div></div>
+    <div class="fgroup"><h4>Institution type</h4>${checks("type", types, S.type)}</div>
+    <button class="btn reset" id="resetBtn">Reset filters</button>`;
+  $$("#filters input[data-f]").forEach(el => el.onchange = () => {
+    const f = el.dataset.f; S[f] = $$(`#filters input[data-f="${f}"]:checked`).map(x => x.value); S.warn = null; update(true);
+  });
+  $("#maxFee").oninput = e => { S.maxFee = +e.target.value; S.feeBand = null; $("#maxFeeVal").textContent = S.maxFee >= 25000 ? "Any" : eur(S.maxFee); update(false); };
+  $("#maxFee").onchange = () => update(true);
+  $("#rel").onchange = e => { S.rel = +e.target.value; update(true); };
+  $("#hideHigh").onchange = e => { S.hideHigh = e.target.checked; update(true); };
+  $("#resetBtn").onclick = () => setPreset("all");
+}
+
+/* ---------- cards ---------- */
+function chips(p) {
+  const st = STATUS[p.status];
+  const c = [`<span class="chip ${st.cls}">${st.t}</span>`,
+    `<span class="chip fee" title="Estimated tuition per year for non-EU students">${p.fee == null ? "Fee ?" : p.fee === 0 ? "€0*" : eur(p.fee) + "/yr"}</span>`];
+  if (p.low != null && p.fee && p.low < p.fee) c.push(`<span class="chip good" title="Possible with a fee exemption (quota-limited)">${eur(p.low)} if exempted</span>`);
+  if (p.total) c.push(`<span class="chip" title="Estimated total tuition">≈ ${eur(p.total)} total · ${p.years} yr${p.years > 1 ? "s" : ""}</span>`);
+  c.push(`<span class="chip">${p.lang === "English" ? "🇬🇧 English" : p.lang === "French & English" ? "🇫🇷🇬🇧 FR + EN" : "🇫🇷 French"}</span>`);
+  c.push(`<span class="chip">${esc(p.field)}</span>`);
+  if (p.extra) c.push(`<span class="chip warn">+ school application</span>`);
+  return c.join("");
+}
+function warnHtml(list, max) {
+  const items = max ? list.filter(w => w.l !== "info").slice(0, max) : list;
+  const rest = max ? list.length - items.length : 0;
+  return items.map(w => `<div class="w ${w.l}"><span class="ic" aria-hidden="true">${ICON[w.l]}</span><span><b>${esc(WARN_LABEL[w.c] || w.c)}:</b> ${esc(w.m)}</span></div>`).join("")
+    + (rest > 0 ? `<div class="small muted">+ ${rest} more note${rest > 1 ? "s" : ""} – open for details</div>` : "");
+}
+function card(p) {
+  return `<article class="card prog" data-id="${p.id}" tabindex="0">
+    <div class="row1"><div style="min-width:0">
+      <div class="ttl">${esc(p.en || p.title)}</div>
+      <div class="fr">${esc(p.title)}</div>
+      <div class="where">🏛 ${esc(p.uni || p.inst)}${p.city ? " · 📍 " + esc(p.city) : ""} · <span class="stars" title="Relevance ${p.rel}/5">${"★".repeat(p.rel)}${"☆".repeat(5 - p.rel)}</span></div>
+    </div><button class="star ${star.has(p.id) ? "on" : ""}" data-star="${p.id}" aria-label="Add to shortlist" title="Add to shortlist">${star.has(p.id) ? "★" : "☆"}</button></div>
+    <div class="chips">${chips(p)}</div>
+    ${p.warn.some(w => w.l !== "info") ? `<div class="warns">${warnHtml(p.warn, 2)}</div>` : ""}
+  </article>`;
+}
+let current = [];
+function update(resetPage) {
+  if (resetPage) shown = 30;
+  current = P.filter(p => match(p)).sort(SORTS[$("#sort").value]);
+  $("#nRes").textContent = current.length;
+  $("#activeHint").textContent = S.warn ? `Showing programs with: “${WARN_LABEL[S.warn]}”` : "";
+  $("#list").innerHTML = current.length ? current.slice(0, shown).map(card).join("") : `<div class="card empty">No programs match. Try “Show everything” or loosen a filter.</div>`;
+  $("#moreBtn").hidden = current.length <= shown;
+  $("#moreBtn").textContent = `Show more (${current.length - shown} left)`;
+  if (resetPage) { renderFilters(); syncLangToggles(); store.set("langToggles", [$("#engOnly").checked, $("#engBi").checked]); }
+}
+$("#moreBtn").onclick = () => { shown += 30; update(false); };
+$("#sort").onchange = () => update(false);
+let qT; $("#q").oninput = e => { clearTimeout(qT); qT = setTimeout(() => { S.q = e.target.value.trim(); update(true); }, 150); };
+$("#filterToggle").onclick = () => $("#filters").classList.toggle("open");
+function setPreset(name) {
+  S = PRESETS[name](); S.q = $("#q").value.trim(); applyLangToggles();
+  $$(".preset").forEach(b => b.setAttribute("aria-pressed", b.dataset.preset === name));
+  update(true);
+}
+$$(".preset").forEach(b => b.onclick = () => setPreset(b.dataset.preset));
+$("#engOnly").onchange = () => { S.warn = null; if ($("#engOnly").checked) applyLangToggles(); else S.lang = [...langs]; update(true); };
+$("#engBi").onchange = () => { applyLangToggles(); update(true); };
+{ const [a, b] = store.get("langToggles", [false, false]); $("#engOnly").checked = a; $("#engBi").checked = b; applyLangToggles(); }
+
+document.addEventListener("click", e => {
+  const s = e.target.closest("[data-star]");
+  if (s) { e.stopPropagation(); toggleStar(+s.dataset.star); return; }
+  const c = e.target.closest(".prog");
+  if (c) openDetail(+c.dataset.id);
+});
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList?.contains("prog")) openDetail(+e.target.dataset.id); });
+function toggleStar(id) {
+  star.has(id) ? star.delete(id) : star.add(id);
+  store.set("shortlist", [...star]);
+  $$(`[data-star="${id}"]`).forEach(b => { b.classList.toggle("on", star.has(id)); b.textContent = star.has(id) ? "★" : "☆"; });
+  $("#shortCount").textContent = star.size;
+  if (!$("#tab-short").hidden) renderShort();
+}
+
+/* ---------- detail ---------- */
+const byId = new Map(P.map(p => [p.id, p]));
+function openDetail(id) {
+  const p = byId.get(id);
+  const entries = p.entries.length ? `<table><thead><tr><th>Year</th><th>Level</th><th>Status</th><th>Length</th><th>Catalogue fee</th><th>Apply window</th></tr></thead><tbody>${p.entries.map(e =>
+    `<tr><td>${e.y}</td><td>${esc(e.lvl || "–")}</td><td>${e.open ? '<span class="chip good">Open</span>' : '<span class="chip bad">Closed</span>'}</td><td>${e.months ? e.months + " mo" : "–"}</td><td>${e.fee ? eur(e.fee) : "–"}</td><td>${esc(e.from || "")} → ${esc(e.to || "")}</td></tr>`).join("")}</tbody></table>` : `<p class="muted">Not available.</p>`;
+  $("#dlgBody").innerHTML = `
+    <button class="iconbtn close" onclick="this.closest('dialog').close()" aria-label="Close">✕</button>
+    <div class="small muted">#${p.id} · ${esc(p.degree)}</div>
+    <h2 style="margin:4px 40px 2px 0">${esc(p.en || p.title)}</h2>
+    <div class="muted small">${esc(p.title)}</div>
+    <div class="chips">${chips(p)}</div>
+    ${p.warn.length ? `<h3 style="margin-top:18px">Warnings &amp; notes (${p.warn.length})</h3><div class="warns">${warnHtml(p.warn)}</div>` : `<p class="chip good" style="margin-top:14px;display:inline-block">No warnings found</p>`}
+    <dl class="kv">
+      <dt>Your route</dt><dd>${esc(p.route)}</dd>
+      <dt>School</dt><dd>${esc(p.inst)}${p.uni && p.uni !== p.inst ? " – " + esc(p.uni) : ""}</dd>
+      <dt>Campus</dt><dd>${esc(p.site || "–")}${p.city ? ", " + esc(p.city) : ""}</dd>
+      <dt>Type</dt><dd>${esc(p.type)}</dd>
+      <dt>Tuition (non-EU)</dt><dd><b>${p.fee == null ? "Unknown" : eur(p.fee) + " / year"}</b>${p.low != null && p.low < (p.fee ?? 0) ? ` · as low as ${eur(p.low)} with exemption` : ""} <span class="muted">(confidence: ${esc(p.conf)})</span><br><span class="small muted">${esc(p.basis)}</span></dd>
+      <dt>Exemption policy</dt><dd>${esc(p.policy || "Not listed – assume €3,950 and request an exemption.")}${p.policySrc ? ` <a href="${esc(p.policySrc)}" target="_blank" rel="noopener">source</a>` : ""}</dd>
+      <dt>Deadline (EEF)</dt><dd>${esc(p.deadline || "–")}${p.extra ? " · <b>also apply on the school's site</b>" : ""}</dd>
+      <dt>Contact</dt><dd>${p.contact ? `<a href="mailto:${esc(p.contact)}">${esc(p.contact)}</a>` : "–"}</dd>
+    </dl>
+    <h3>Entry years on Études en France (live)</h3><div class="tablewrap">${entries}</div>
+    ${p.req ? `<h3 style="margin-top:16px">Requirements (from the catalogue, in the school's words)</h3><p class="small" style="white-space:pre-line">${esc(p.req)}${p.req.length >= 700 ? "…" : ""}</p>` : ""}
+    <div class="links">
+      <a class="btn primary" href="${esc(p.eef)}" target="_blank" rel="noopener">Open in Études en France ↗</a>
+      ${p.web ? `<a class="btn" href="${esc(p.web.startsWith("http") ? p.web : "https://" + p.web)}" target="_blank" rel="noopener">Program website ↗</a>` : ""}
+      <button class="btn" data-star="${p.id}">${star.has(p.id) ? "★ In shortlist" : "☆ Add to shortlist"}</button>
+    </div>`;
+  $("#dlg").showModal();
+}
+$("#dlg").addEventListener("click", e => { if (e.target.id === "dlg") e.target.close(); });
+
+/* ---------- shortlist ---------- */
+const STAGES = ["Interested", "Preparing", "Applied (EEF)", "Applied (school)", "Interview", "Admitted", "Rejected", "Dropped"];
+function renderShort() {
+  const rows = [...star].map(id => byId.get(id)).filter(Boolean);
+  $("#shortCount").textContent = star.size;
+  if (!rows.length) { $("#shortTable").innerHTML = `<div class="empty">No programs yet. Go to <b>Find programs</b> and tap ☆.</div>`; return; }
+  $("#shortTable").innerHTML = `<table><thead><tr><th>Program</th><th>Status</th><th>Fee / yr</th><th>Total</th><th>Lang</th><th>Warnings</th><th>My stage</th><th>Notes</th><th></th></tr></thead><tbody>${rows.map(p => {
+    const n = notes[p.id] || {};
+    return `<tr><td><a href="#" data-open="${p.id}">${esc(p.en || p.title)}</a><div class="small muted">${esc(p.uni || p.inst)} · ${esc(p.city)}</div></td>
+      <td><span class="chip ${STATUS[p.status].cls}">${STATUS[p.status].short}</span></td>
+      <td>${eur(p.fee)}</td><td>${eur(p.total)}</td><td>${esc(p.lang)}</td>
+      <td>${p.nHigh ? `<span class="chip bad">⛔ ${p.nHigh}</span> ` : ""}${p.nMed ? `<span class="chip warn">⚠ ${p.nMed}</span>` : ""}${!p.nHigh && !p.nMed ? '<span class="chip good">OK</span>' : ""}</td>
+      <td><select data-stage="${p.id}">${STAGES.map(s => `<option ${n.stage === s ? "selected" : ""}>${s}</option>`).join("")}</select></td>
+      <td><input data-note="${p.id}" value="${esc(n.note || "")}" placeholder="e.g. SOP sent"></td>
+      <td><button class="star on" data-star="${p.id}" aria-label="Remove">★</button></td></tr>`; }).join("")}</tbody></table>`;
+  $$("[data-stage]").forEach(el => el.onchange = () => { (notes[el.dataset.stage] ||= {}).stage = el.value; store.set("notes", notes); });
+  $$("[data-note]").forEach(el => el.oninput = () => { (notes[el.dataset.note] ||= {}).note = el.value; store.set("notes", notes); });
+  $$("[data-open]").forEach(el => el.onclick = e => { e.preventDefault(); openDetail(+el.dataset.open); });
+}
+$("#clearShort").onclick = () => { if (confirm("Remove all programs from your shortlist?")) { star.clear(); store.set("shortlist", []); renderShort(); update(false); } };
+
+/* ---------- CSV ---------- */
+function csv(rows, name) {
+  const cols = [["#", p => p.id], ["Program (EN)", p => p.en], ["Program (FR)", p => p.title], ["University", p => p.uni || p.inst], ["City", p => p.city],
+    ["Field", p => p.field], ["Relevance", p => p.rel], ["Language", p => p.lang], ["Can I apply", p => STATUS[p.status].short], ["Fee/yr (€)", p => p.fee],
+    ["With exemption (€)", p => p.low], ["Years", p => p.years], ["Total (€)", p => p.total], ["Deadline", p => p.deadline], ["School application too", p => p.extra ? "Yes" : "No"],
+    ["Warnings", p => p.warn.filter(w => w.l !== "info").map(w => WARN_LABEL[w.c]).join("; ")], ["My stage", p => notes[p.id]?.stage || ""], ["My notes", p => notes[p.id]?.note || ""],
+    ["EEF link", p => p.eef], ["Website", p => p.web]];
+  const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const text = "﻿" + [cols.map(c => q(c[0])).join(","), ...rows.map(p => cols.map(c => q(c[1](p))).join(","))].join("\r\n");
+  const a = Object.assign(document.createElement("a"), {href: URL.createObjectURL(new Blob([text], {type: "text/csv"})), download: name});
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+$("#exportRes").onclick = () => csv(current, "france-masters-filtered.csv");
+$("#exportShort").onclick = () => csv([...star].map(id => byId.get(id)).filter(Boolean), "my-shortlist.csv");
+
+/* ---------- overview ---------- */
+function bars(el, data, onClick, fmt = v => v) {
+  const max = Math.max(...data.map(d => d[1]), 1);
+  $(el).innerHTML = data.map(([k, v, title], i) => `<div class="hbar" role="listitem" tabindex="0" data-i="${i}" title="${esc(title || k)}: ${fmt(v)}">
+    <span class="lab">${esc(k)}</span><span class="track"><span class="fill" style="width:${(v / max * 100).toFixed(1)}%"></span></span><span class="val">${fmt(v)}</span></div>`).join("");
+  $$(el + " .hbar").forEach(b => { const go = () => onClick(data[+b.dataset.i]); b.onclick = go; b.onkeydown = e => e.key === "Enter" && go(); });
+}
+function goFind(state) { S = {...PRESETS.all(), ...state}; applyLangToggles(); $$(".preset").forEach(b => b.setAttribute("aria-pressed", "false")); $("#q").value = S.q || ""; switchTab("find"); update(true); }
+function renderOverview() {
+  const can = P.filter(p => ["eligible", "m2", "possible"].includes(p.status));
+  const best = P.filter(p => match(p, PRESETS.best()));
+  const eng = can.filter(p => p.lang !== "French" && p.fee != null && p.fee <= 6000 && !p.nHigh);
+  const cheapest = best.filter(p => p.fee).sort((a, b) => a.fee - b.fee)[0];
+  const tiles = [
+    [P.length, "programs in your list"], [META.verified, `re-verified live on EEF (${META.liveChecked})`],
+    [P.filter(p => p.status === "eligible").length, "you can apply to directly (open, at your level)"], [best.length, "⭐ best for you (★4+, M1, ≤ €6k, no ⛔)"],
+    [eng.length, "English / bilingual, ≤ €6k, open"], [P.reduce((n, p) => n + p.nHigh, 0), "⛔ serious warnings found"],
+  ];
+  $("#tiles").innerHTML = tiles.map(([v, l]) => `<div class="card tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+  const byField = {}; can.forEach(p => byField[p.field] = (byField[p.field] || 0) + 1);
+  bars("#chartField", Object.entries(byField).sort((a, b) => b[1] - a[1]), d => goFind({status: ["eligible", "m2", "possible"], field: [d[0]], type: types.slice(0, 3), rel: 1, hideHigh: false}));
+  const bands = [["€0 (apprenticeship)", 0, 1], ["€1 – 3,000", 1, 3000], ["€3,000 – 4,000", 3000, 4001], ["€4,001 – 6,000", 4001, 6001], ["€6,001 – 10,000", 6001, 10001], ["€10,001 – 15,000", 10001, 15001], ["over €15,000", 15001, 1e7]];
+  bars("#chartFee", bands.map(([l, a, b]) => [l, can.filter(p => p.fee != null && p.fee >= a && p.fee < b).length, a, b]),
+    d => goFind({status: ["eligible", "m2", "possible"], feeBand: [d[2], d[3]], rel: 1, hideHigh: false}));
+  const wc = {}; P.forEach(p => p.warn.forEach(w => { if (w.l !== "info") wc[w.c] = (wc[w.c] || 0) + 1; }));
+  bars("#chartWarn", Object.entries(wc).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k, v]) => [WARN_LABEL[k] || k, v, k]), d => goFind({warn: d[2]}));
+  const cc = {}; can.forEach(p => { if (p.city) cc[p.city] = (cc[p.city] || 0) + 1; });
+  bars("#chartCity", Object.entries(cc).sort((a, b) => b[1] - a[1]).slice(0, 12), d => goFind({q: d[0], status: ["eligible", "m2", "possible"], rel: 1, hideHigh: false}));
+}
+
+/* ---------- fees table ---------- */
+function renderFees() {
+  const m = new Map();
+  P.forEach(p => { if (!p.policy || !p.uni) return; const k = p.uni; if (!m.has(k)) m.set(k, {p, n: 0}); m.get(k).n++; });
+  const rows = [...m.values()].sort((a, b) => b.n - a.n);
+  $("#policyTable").innerHTML = `<thead><tr><th>University</th><th>Programs</th><th>Exemption policy</th><th>Source</th></tr></thead><tbody>${rows.map(({p, n}) => {
+    const unofficial = /observalgerie|letudiant|mastersportal/.test(p.policySrc || "");
+    return `<tr><td><b>${esc(p.uni)}</b></td><td>${n}</td><td>${esc(p.policy)}${unofficial ? ' <span class="chip warn">⚠ news source</span>' : ""}</td><td>${p.policySrc ? `<a href="${esc(p.policySrc)}" target="_blank" rel="noopener">link ↗</a>` : "–"}</td></tr>`; }).join("")}
+    <tr><td colspan="4" class="muted">Universities not listed: assume €3,950/yr and request an exemption when you apply (quota-limited).</td></tr></tbody>`;
+}
+
+/* ---------- checks ---------- */
+function renderChecks() {
+  const wc = {}; P.forEach(p => p.warn.forEach(w => { (wc[w.c] ||= {n: 0, l: w.l}).n++; }));
+  $("#checks").innerHTML = `
+    <div class="card callout"><h3>1 · Every program re-checked against the live Études en France catalogue</h3>
+      <p style="margin:0">${META.verified} of ${META.count} listings were downloaded again from the official EEF catalogue on ${META.liveChecked}. Title, school, level, language, entry years, open/closed status, fees entered by the school, application dates, “separate application” flag and website all matched your spreadsheet, apart from the corrections below. ${META.count - META.verified} listing could not be loaded (server error) and is marked ⛔.</p></div>
+    <div class="card callout warn"><h3>2 · Corrections made to your spreadsheet</h3><ul style="margin:0;padding-left:18px">
+      ${META.changes.map(c => `<li><b>${c.n}</b> ${esc(c.what)}</li>`).join("")}
+      <li><b>Entry level was misread.</b> In EEF, “Bac +4” / “Bac +5” is the level of the year you join (M1 = Bac+4, M2 = Bac+5), not the diploma you need. So “Bac +5” programs are M2 entry – a stretch for a 4-year BS, but not “needs a Master”. Years to finish were recalculated the same way.</li>
+      <li><b>Exemption-policy updates</b> for Paris Cité, Grenoble Alpes and Tours (see “Fees &amp; exemptions”).</li>
+      <li><b>Engineering-school fees</b>: €630 is the EU rate; most public engineering schools charge non-EU students €3,950.</li></ul></div>
+    <div class="card callout"><h3>3 · Official facts verified</h3><ul style="margin:0;padding-left:18px">
+      <li>2026-27 fees: Master €3,950 non-EU / €255 EU; Licence €2,902 / €178 – service-public.gouv.fr (updated 20 Aug 2026).</li>
+      <li>Decree 2026-385 (19 May 2026): exemption cap 30% → 25% (2027-28) → 20%.</li>
+      <li>EEF application window for 2027: 1 Oct 2026 – 15 Mar 2027 (live catalogue).</li>
+      <li>${Object.keys(wc).length ? "" : ""}Program websites tested on ${META.webChecked}: ${wc.deadweb?.n || 0} did not load (404 / DNS error).</li></ul></div>
+    <div class="card"><div class="tablewrap"><table><thead><tr><th>Warning</th><th>Severity</th><th>Programs</th><th></th></tr></thead><tbody>
+      ${Object.entries(wc).sort((a, b) => ({high:0,med:1,info:2}[a[1].l] - {high:0,med:1,info:2}[b[1].l]) || b[1].n - a[1].n).map(([k, v]) =>
+        `<tr><td>${ICON[v.l]} ${esc(WARN_LABEL[k] || k)}</td><td>${{high: "Serious", med: "Check", info: "Note"}[v.l]}</td><td>${v.n}</td><td><a href="#" data-warn="${k}">show</a></td></tr>`).join("")}
+    </tbody></table></div></div>
+    <p class="small muted">Not checked: the full text of every school website (only that the page loads), and 2027-28 fee amounts (not published yet).</p>`;
+  $$("[data-warn]").forEach(a => a.onclick = e => { e.preventDefault(); goFind({warn: a.dataset.warn}); });
+}
+
+/* ---------- tabs ---------- */
+const rendered = {};
+function switchTab(t) {
+  $$("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+  $$("main > section").forEach(s => s.hidden = s.id !== "tab-" + t);
+  if (t === "short") renderShort();
+  if (!rendered[t]) { ({overview: renderOverview, fees: renderFees, checks: renderChecks})[t]?.(); rendered[t] = 1; }
+  store.set("tab", t); window.scrollTo(0, 0);
+}
+$$("nav.tabs button").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+$("#shortCount").textContent = star.size;
+update(true);
+const t0 = store.get("tab", "find"); if (t0 !== "find") switchTab(t0);
+})();
+</script>
+</body>
+</html>
