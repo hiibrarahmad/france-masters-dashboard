@@ -75,6 +75,39 @@ OFF_TOPIC = re.compile(
 )
 
 
+TESTS = [
+    ("IELTS", r"\bIELTS\b"), ("TOEFL", r"\bTOEFL\b"), ("PTE", r"\bPTE\b|Pearson Test"),
+    ("TOEIC", r"\bTOEIC\b"), ("Cambridge", r"Cambridge|\b(?:FCE|CAE|CPE)\b|Linguaskill"), ("Duolingo", r"Duolingo"),
+]
+MOI = re.compile(
+    r"medium of instruction|\bMOI\b|(?:previous|prior|bachelor'?s?)\s+(?:studies|degree|education)[^.]{0,60}(?:taught\s+)?in English|"
+    r"(?:degree|studies|diploma)\s+(?:was\s+|were\s+)?(?:fully\s+|entirely\s+)?taught in English|"
+    r"(?:études|diplôme|formation) ant[ée]rieures?[^.]{0,40}en anglais|attestation[^.]{0,60}(?:enseignement|langue)[^.]{0,30}anglais",
+    re.I,
+)
+ENG_LEVEL = re.compile(r"(?:anglais|english)[^.;]{0,50}\b(B1|B2|C1|C2)\b|\b(B1|B2|C1|C2)\b[^.;]{0,40}(?:anglais|english)", re.I)
+
+
+def english_rules(text):
+    """What the catalogue text says about proving English. Only reports what is written."""
+    tests = [name for name, pat in TESTS if re.search(pat, text, re.I)]
+    m = re.search(r"IELTS[^0-9]{0,30}(\d(?:[.,]\d)?)", text, re.I)
+    ielts = m.group(1).replace(",", ".") if m and 4 <= float(m.group(1).replace(",", ".")) <= 9 else None
+    m = re.search(r"\bPTE\b[^0-9]{0,30}(\d{2})", text, re.I)
+    pte = m.group(1) if m else None
+    lvl = ENG_LEVEL.search(text)
+    moi = bool(MOI.search(text))
+    if moi:
+        kind = "moi"
+    elif tests:
+        kind = "test"
+    elif lvl:
+        kind = "level"
+    else:
+        kind = "none"
+    return {"kind": kind, "tests": tests, "ielts": ielts, "pte": pte, "level": (lvl.group(1) or lvl.group(2)) if lvl else None}
+
+
 def clean(s):
     if not s:
         return ""
@@ -350,6 +383,11 @@ def build():
         if lang in (None, "n/a", ""):
             w("med", "nolang", "Teaching language not stated in the catalogue.")
         proc_text = " ".join(clean((e.get("procedureInscription") or {}).get("value")) for e in E)
+        desc = g.get("descriptionFormation")
+        desc = clean(desc.get("value") if isinstance(desc, dict) else desc)
+        eng = english_rules(" ".join([req, desc, proc_text]))
+        if lang in ("English", "French & English") and eng["kind"] == "test":
+            w("med", "testreq", "Asks for an English test (" + ", ".join(eng["tests"]) + (f", IELTS {eng['ielts']}" if eng["ielts"] else "") + ") and does not mention accepting a Medium of Instruction (MOI) letter. Plan to take IELTS/TOEFL" + (" – PTE is listed." if "PTE" in eng["tests"] else " – PTE is not listed, so ask before booking PTE."))
         if OLD_YEAR.search(proc_text):
             w("info", "stale", "The school's catalogue text still mentions past academic years (e.g. 2025-26) – some details may be out of date.")
 
@@ -414,6 +452,7 @@ def build():
             "web": wurl,
             "contact": contact,
             "req": req[:700],
+            "eng": eng,
             "eef": d["Catalogue link__link"],
             "verified": ok,
             "warn": warn,
@@ -428,11 +467,20 @@ def build():
         if not p["city"] and uni_city[p["uni"]]:
             p["city"] = uni_city[p["uni"]].most_common(1)[0][0]
 
+    # The dashboard lists only programs you can actually apply to; the full catalogue lives in its own repo.
+    all_count = len(programs)
+    excluded = Counter("Closed for 2027" if p["status"] == "closed" else "Apprenticeship (needs French employer)" if p["type"] == "Apprenticeship (CFA/ITII)"
+                       else "Undergraduate entry or PhD" for p in programs
+                       if p["status"] not in ("eligible", "m2", "possible") or p["type"] == "Apprenticeship (CFA/ITII)")
+    programs = [p for p in programs if p["status"] in ("eligible", "m2", "possible") and p["type"] != "Apprenticeship (CFA/ITII)"]
+
     meta = {
         "built": dt.date.today().isoformat(),
         "liveChecked": fetched,
         "webChecked": web.get("__checked", "2026-10-09"),
         "count": len(programs),
+        "allCount": all_count,
+        "excluded": [{"what": k, "n": v} for k, v in excluded.most_common()],
         "verified": sum(p["verified"] for p in programs),
         "changes": [{"what": k, "n": v} for k, v in changes.most_common()],
     }

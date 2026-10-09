@@ -114,6 +114,9 @@ h2{font-size:20px;margin:0 0 4px} h3{font-size:16px;margin:0 0 8px}
 .btn{border:1px solid var(--border);background:var(--surface);border-radius:9px;padding:8px 14px;cursor:pointer;font-weight:550}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .empty{padding:40px;text-align:center;color:var(--muted)}
+.btn.mini{padding:2px 8px;font-size:12.5px}
+.sel{user-select:all;font-family:ui-monospace,monospace;font-size:13px;word-break:break-all}
+#tplName{flex:1;min-width:200px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
 .btn.danger{background:var(--bad-soft);border-color:var(--bad-dot);color:var(--bad)}
 .copybox{width:100%;height:120px;margin-top:8px;font:12px ui-monospace,monospace;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px}
 
@@ -166,6 +169,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding:20px 16px 4
         <div class="sub" id="subtitle"></div>
       </div>
       <div class="spacer"></div>
+      <a class="iconbtn" href="https://hiibrarahmad.github.io/france-full-catalogue/" target="_blank" rel="noopener" style="text-decoration:none">📚 Full catalogue (all 17,000+ courses) ↗</a>
       <span class="countdown" id="countdown"></span>
       <button class="iconbtn" id="themeBtn" title="Switch light / dark" aria-label="Switch light or dark theme">◐</button>
     </div>
@@ -175,6 +179,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding:20px 16px 4
       <button role="tab" data-tab="overview">📊 Overview</button>
       <button role="tab" data-tab="fees">💶 Fees &amp; exemptions</button>
       <button role="tab" data-tab="apply">🧭 How to apply</button>
+      <button role="tab" data-tab="contact">✉ Email schools</button>
       <button role="tab" data-tab="checks">✅ What was checked</button>
     </nav>
   </div>
@@ -274,6 +279,21 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding:20px 16px 4
         <li><b>Université de Tours</b>: 2027-28 policy published – 25% cap, on request.</li>
       </ul>
     </div>
+    <div class="card callout" style="border-left-color:var(--good)">
+      <h3>🇵🇰 Ways a Pakistani student can pay less (checked 9 Oct 2026)</h3>
+      <p class="small muted" style="margin:0 0 8px">There is no automatic exemption for Pakistani nationals – Campus France Pakistan confirms Pakistanis pay €3,950/yr for a master at public universities. These are the real routes:</p>
+      <ol style="margin:0;padding-left:20px;display:grid;gap:6px">
+        <li><b>Ask each university for an exemption (exonération)</b> – every public university may exempt up to 25% of non-EU students in 2027-28, on criteria its board sets (academic merit, social situation, partnerships). You then pay ~€255 instead of €3,950. Request it when you apply – use the <b>✉ Email schools</b> tab.</li>
+        <li><b>France Excellence Eiffel scholarship</b> – French-government scholarship (€1,181/month for a master). The <i>university</i> nominates you; you can't apply directly. Age ≤ 29 at master level. The scholarship doesn't pay tuition, but as a French-government scholar you are exempt from the differentiated fee at public institutions. The campaign usually opens in October with a deadline in early January, so ask the program now whether it will nominate you. <a href="https://www.pakistan.campusfrance.org/eiffel-scholarship-program-of-excellence" target="_blank" rel="noopener">Campus France Pakistan</a></li>
+        <li><b>France Excellence Pakistan – Climate Change</b> (French Embassy) – covers tuition, living allowance, flights and visa. Limited to climate / environment / energy / agri-food masters; age ≤ 28, CGPA ≥ 3.0/4, ≤ 2 years since graduation. Deadline 18 Nov 2026. <a href="https://www.pakistan.campusfrance.org/2026-call-france-excellence-pakistan-climate-change" target="_blank" rel="noopener">Details</a></li>
+        <li><b>University excellence scholarships (IDEX / “bourses d'excellence”)</b> – Grenoble Alpes, Paris-Saclay, Université Côte d'Azur, Sorbonne, Toulouse and others offer master scholarships that often include a fee waiver. Look on each program's website under “scholarships” / “bourses”.</li>
+        <li><b>Erasmus Mundus joint masters</b> – fully funded (tuition + €1,400/month) and open to Pakistanis; several are partly taught in France (embedded systems, biomedical, robotics). <a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en" target="_blank" rel="noopener">Catalogue</a></li>
+        <li><b>HEC Pakistan overseas scholarships</b> – HEC and Campus France run M2+PhD scholarships for France that cover tuition, stipend and flights, when a call is open. <a href="https://www.hec.gov.pk/english/scholarshipsgrants/Guidelines/Pages/Guideline-for-France.aspx" target="_blank" rel="noopener">HEC guideline</a></li>
+        <li><b>Schools that don't charge the higher rate</b> – some public engineering schools (e.g. Université de Tours) charge non-EU students the same €630 as everyone for the Diplôme d'ingénieur. Ask engineering schools directly.</li>
+        <li><b>PhD later</b> – doctoral fees are €398/yr with no non-EU surcharge, and PhDs are usually salaried.</li>
+      </ol>
+      <p class="small muted" style="margin:8px 0 0">Also: French-government scholars and Erasmus Mundus students don't pay the Études en France application fee (PKR 30,000 in 2026-27).</p>
+    </div>
     <div class="card tablewrap"><table id="policyTable"></table></div>
   </section>
 
@@ -294,6 +314,28 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding:20px 16px 4
       <h3>If your grades are average</h3>
       <p style="margin:0">French public masters select mostly on grades, so apply widely. Strengthen the file with a sharp statement of purpose, strong experience letters and a good language score. Programs that only open the final year (M2) are a stretch – keep M1 programs as your main options.</p>
     </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="tab-contact" hidden>
+    <h2>Email schools about fee exemption</h2>
+    <p class="muted small">Contact emails come from each program's Études en France listing. Send one email per school – French gets faster answers if you can.</p>
+    <div class="card callout">
+      <h3>Ready-to-send email</h3>
+      <div class="searchrow" style="margin:6px 0 10px">
+        <label class="toggle"><input type="radio" name="tplLang" id="tplEn" value="en" checked> English</label>
+        <label class="toggle"><input type="radio" name="tplLang" id="tplFr" value="fr"> Français</label>
+        <input type="search" id="tplName" placeholder="Your full name (for the signature)" aria-label="Your name">
+      </div>
+      <textarea id="tplText" class="copybox" style="height:300px" aria-label="Email template"></textarea>
+      <div class="searchrow" style="margin-top:8px"><button class="btn primary" id="copyTpl">Copy email text</button><span class="small muted">On each program, “Email in English / en français” fills in the program and school for you.</span></div>
+    </div>
+    <div class="searchrow">
+      <label class="toggle"><input type="radio" name="cScope" id="cScopeRes" value="res" checked> Programs from my current search</label>
+      <label class="toggle"><input type="radio" name="cScope" id="cScopeShort" value="short"> My shortlist only</label>
+      <button class="btn" id="copyEmails">Copy all emails (for BCC)</button>
+    </div>
+    <div class="card tablewrap" id="contactTable"></div>
   </section>
 
   <!-- CHECKS -->
@@ -331,7 +373,7 @@ $("#themeBtn").onclick = () => {
 const deadline = new Date("2027-03-15T23:59:59");
 const days = Math.ceil((deadline - new Date()) / 864e5);
 $("#countdown").textContent = days > 0 ? `⏳ ${days} days to EEF deadline (15 Mar 2027)` : "EEF deadline passed";
-$("#subtitle").textContent = `${META.count} programs · ${META.verified} re-verified live on Études en France (${META.liveChecked})`;
+$("#subtitle").textContent = `${META.count} programs you can apply to (of ${META.allCount} relevant) · re-verified live on Études en France ${META.liveChecked}`;
 $("#fChecked").textContent = META.liveChecked;
 
 /* ---------- labels ---------- */
@@ -355,7 +397,29 @@ const WARN_LABEL = {
 const ICON = {high: "⛔", med: "⚠", info: "ℹ"};
 const fields = [...new Set(P.map(p => p.field))].sort();
 const langs = ["English", "French & English", "French"];
-const types = ["Public university", "Public school / institute", "Private / EESPIG", "Apprenticeship (CFA/ITII)"];
+const types = ["Public university", "Public school / institute", "Private / EESPIG"];
+const OPEN_STATUS = ["eligible", "m2", "possible"];
+const ENG = {
+  moi:   {f: "MOI letter accepted", cls: "good"},
+  test:  {f: "Test required (IELTS / TOEFL …), MOI not mentioned", cls: "warn"},
+  level: {f: "Only an English level stated (B2 / C1), no test named", cls: ""},
+  none:  {f: "Not stated – ask the school", cls: ""},
+};
+function engChip(p) {
+  const e = p.eng || {kind: "none", tests: []};
+  if (e.kind === "moi") return `<span class="chip good" title="The catalogue says a Medium of Instruction certificate can prove English">✓ MOI accepted</span>`;
+  if (e.kind === "test") return `<span class="chip warn" title="Tests named: ${esc(e.tests.join(", "))}. No mention of accepting an MOI letter.">📝 ${e.ielts ? "IELTS " + esc(e.ielts) : esc(e.tests[0])} required${e.tests.includes("PTE") ? " · PTE ok" : ""}</span>`;
+  if (e.kind === "level" && p.lang !== "French") return `<span class="chip" title="English level stated, no test named – ask whether MOI is accepted">English ${esc(e.level)}</span>`;
+  if (p.lang !== "French") return `<span class="chip" title="The catalogue doesn't say how to prove English – ask the school whether an MOI letter is accepted">English proof: ask</span>`;
+  return "";
+}
+function engText(p) {
+  const e = p.eng || {kind: "none", tests: []};
+  if (e.kind === "moi") return "Medium of Instruction (MOI) certificate accepted, according to the catalogue." + (e.tests.length ? " Tests also listed: " + e.tests.join(", ") + "." : "");
+  if (e.kind === "test") return `Test required: ${e.tests.join(", ")}${e.ielts ? ` (IELTS ${e.ielts})` : ""}${e.pte ? ` (PTE ${e.pte})` : ""}. MOI letter not mentioned – assume it is not accepted unless the school confirms. ${e.tests.includes("PTE") ? "PTE is accepted." : "PTE is not listed – ask before booking PTE."}`;
+  if (e.kind === "level") return `English level ${e.level} stated, no specific test named. Ask whether an MOI letter is enough.`;
+  return "The catalogue doesn't say how to prove English. Ask the school (the email template asks).";
+}
 
 /* ---------- score ---------- */
 for (const p of P) {
@@ -369,13 +433,13 @@ for (const p of P) {
 }
 
 /* ---------- filter state ---------- */
-const DEFAULT = () => ({q: "", status: ["eligible", "m2", "possible"], lang: [...langs], field: [], type: types.slice(0, 3), maxFee: 25000, rel: 3, hideHigh: true, warn: null, feeBand: null});
+const DEFAULT = () => ({q: "", status: [...OPEN_STATUS], lang: [...langs], field: [], type: [...types], maxFee: 25000, rel: 3, hideHigh: true, warn: null, feeBand: null, eng: [], pte: false});
 const PRESETS = {
   best: () => ({...DEFAULT(), status: ["eligible"], rel: 4, maxFee: 6000}),
   english: () => ({...DEFAULT(), lang: ["English", "French & English"], maxFee: 6000}),
   bio: () => ({...DEFAULT(), field: ["Biomedical / Health tech", "Neuroscience / Neuro-engineering", "Signal / Image / Vision", "Bioinformatics"]}),
   embedded: () => ({...DEFAULT(), field: ["Embedded systems / Electronics", "IoT / Telecom / Networks", "Sensors / Instrumentation / Micro-Nano / Photonics", "Robotics / Automation / Mechatronics"]}),
-  all: () => ({...DEFAULT(), status: Object.keys(STATUS), type: [...types], rel: 1, hideHigh: false}),
+  all: () => ({...DEFAULT(), rel: 1, hideHigh: false}),
 };
 let S = PRESETS.best(), shown = 30;
 function applyLangToggles() {
@@ -396,6 +460,8 @@ function match(p, s = S) {
   if (!s.status.includes(p.status)) return false;
   if (!s.lang.includes(p.lang)) return false;
   if (s.field.length && !s.field.includes(p.field)) return false;
+  if (s.eng?.length && !s.eng.includes(p.eng.kind)) return false;
+  if (s.pte && !p.eng.tests.includes("PTE")) return false;
   if (!s.type.includes(p.type)) return false;
   if (p.rel < s.rel) return false;
   if (s.maxFee < 25000 && (p.fee == null || p.fee > s.maxFee)) return false;
@@ -418,8 +484,11 @@ function checks(name, opts, sel, counts) {
 function renderFilters() {
   const base = P.filter(p => match(p, {...S, field: [], warn: null}));
   const fc = {}; base.forEach(p => fc[p.field] = (fc[p.field] || 0) + 1);
+  const ec = {}; P.filter(p => match(p, {...S, eng: [], pte: false, warn: null})).forEach(p => ec[p.eng.kind] = (ec[p.eng.kind] || 0) + 1);
   $("#filters").innerHTML = `
-    <div class="fgroup"><h4>Can I apply?</h4>${checks("status", Object.keys(STATUS).map(k => [k, STATUS[k].short]), S.status)}</div>
+    <div class="fgroup"><h4>Can I apply?</h4>${checks("status", OPEN_STATUS.map(k => [k, STATUS[k].short]), S.status)}</div>
+    <div class="fgroup"><h4>English proof (from catalogue)</h4>${checks("eng", Object.keys(ENG).map(k => [k, ENG[k].f]), S.eng, ec)}
+      <label><input type="checkbox" id="pteOnly" ${S.pte ? "checked" : ""}><span>PTE accepted</span></label><div class="small muted">None ticked = all</div></div>
     <div class="fgroup"><h4>Teaching language</h4>${checks("lang", langs, S.lang)}</div>
     <div class="fgroup"><h4>Max tuition per year</h4>
       <input type="range" id="maxFee" min="500" max="25000" step="500" value="${S.maxFee}" aria-label="Maximum tuition per year">
@@ -439,6 +508,7 @@ function renderFilters() {
   $("#maxFee").onchange = () => update(true);
   $("#rel").onchange = e => { S.rel = +e.target.value; update(true); };
   $("#hideHigh").onchange = e => { S.hideHigh = e.target.checked; update(true); };
+  $("#pteOnly").onchange = e => { S.pte = e.target.checked; update(true); };
   $("#resetBtn").onclick = () => setPreset("all");
 }
 
@@ -450,8 +520,10 @@ function chips(p) {
   if (p.low != null && p.fee && p.low < p.fee) c.push(`<span class="chip good" title="Possible with a fee exemption (quota-limited)">${eur(p.low)} if exempted</span>`);
   if (p.total) c.push(`<span class="chip" title="Estimated total tuition">≈ ${eur(p.total)} total · ${p.years} yr${p.years > 1 ? "s" : ""}</span>`);
   c.push(`<span class="chip">${p.lang === "English" ? "🇬🇧 English" : p.lang === "French & English" ? "🇫🇷🇬🇧 FR + EN" : "🇫🇷 French"}</span>`);
+  const ech = engChip(p); if (ech) c.push(ech);
   c.push(`<span class="chip">${esc(p.field)}</span>`);
   if (p.extra) c.push(`<span class="chip warn">+ school application</span>`);
+  if (p.contact) c.push(`<span class="chip" title="${esc(p.contact)}">✉ email</span>`);
   return c.join("");
 }
 function warnHtml(list, max) {
@@ -531,9 +603,13 @@ function openDetail(id) {
       <dt>Type</dt><dd>${esc(p.type)}</dd>
       <dt>Tuition (non-EU)</dt><dd><b>${p.fee == null ? "Unknown" : eur(p.fee) + " / year"}</b>${p.low != null && p.low < (p.fee ?? 0) ? ` · as low as ${eur(p.low)} with exemption` : ""} <span class="muted">(confidence: ${esc(p.conf)})</span><br><span class="small muted">${esc(p.basis)}</span></dd>
       <dt>Exemption policy</dt><dd>${esc(p.policy || "Not listed – assume €3,950 and request an exemption.")}${p.policySrc ? ` <a href="${esc(p.policySrc)}" target="_blank" rel="noopener">source</a>` : ""}</dd>
+      <dt>English proof</dt><dd>${esc(engText(p))}</dd>
       <dt>Deadline (EEF)</dt><dd>${esc(p.deadline || "–")}${p.extra ? " · <b>also apply on the school's site</b>" : ""}</dd>
-      <dt>Contact</dt><dd>${p.contact ? `<a href="mailto:${esc(p.contact)}">${esc(p.contact)}</a>` : "–"}</dd>
+      <dt>Contact email</dt><dd>${p.contact ? `<span class="sel">${esc(p.contact)}</span> <button class="btn mini" data-copy="${esc(p.contact)}">Copy</button>` : "Not in the catalogue – use the contact page on the program website."}</dd>
     </dl>
+    ${p.contact ? `<div class="card callout" style="box-shadow:none"><h3>✉ Ask this school about a fee exemption</h3>
+      <p class="small" style="margin:0 0 8px">A polite request asking whether you'd pay €3,950 or less, how to request an exemption, and which scholarships exist.</p>
+      <div class="searchrow" style="margin:0"><a class="btn primary" href="${mailtoFor(p, "en")}" target="_blank" rel="noopener">Email in English</a><a class="btn" href="${mailtoFor(p, "fr")}" target="_blank" rel="noopener">Email en français</a><button class="btn" data-copytpl="${p.id}">Copy email text</button></div></div>` : ""}
     <h3>Entry years on Études en France (live)</h3><div class="tablewrap">${entries}</div>
     ${p.req ? `<h3 style="margin-top:16px">Requirements (from the catalogue, in the school's words)</h3><p class="small" style="white-space:pre-line">${esc(p.req)}${p.req.length >= 700 ? "…" : ""}</p>` : ""}
     <div class="links">
@@ -575,7 +651,7 @@ $("#clearShort").onclick = e => {
 /* ---------- CSV ---------- */
 function csvText(rows) {
   const cols = [["#", p => p.id], ["Program (EN)", p => p.en], ["Program (FR)", p => p.title], ["University", p => p.uni || p.inst], ["City", p => p.city],
-    ["Field", p => p.field], ["Relevance", p => p.rel], ["Language", p => p.lang], ["Can I apply", p => STATUS[p.status].short], ["Fee/yr (€)", p => p.fee],
+    ["Field", p => p.field], ["Relevance", p => p.rel], ["Language", p => p.lang], ["English proof", p => engText(p)], ["Can I apply", p => STATUS[p.status].short], ["Fee/yr (€)", p => p.fee],
     ["With exemption (€)", p => p.low], ["Years", p => p.years], ["Total (€)", p => p.total], ["Deadline", p => p.deadline], ["School application too", p => p.extra ? "Yes" : "No"],
     ["Warnings", p => p.warn.filter(w => w.l !== "info").map(w => WARN_LABEL[w.c]).join("; ")], ["My stage", p => notes[p.id]?.stage || ""], ["My notes", p => notes[p.id]?.note || ""],
     ["EEF link", p => p.eef], ["Website", p => p.web]];
@@ -625,7 +701,7 @@ function renderOverview() {
   ];
   $("#tiles").innerHTML = tiles.map(([v, l]) => `<div class="card tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
   const byField = {}; can.forEach(p => byField[p.field] = (byField[p.field] || 0) + 1);
-  bars("#chartField", Object.entries(byField).sort((a, b) => b[1] - a[1]), d => goFind({status: ["eligible", "m2", "possible"], field: [d[0]], type: types.slice(0, 3), rel: 1, hideHigh: false}));
+  bars("#chartField", Object.entries(byField).sort((a, b) => b[1] - a[1]), d => goFind({status: ["eligible", "m2", "possible"], field: [d[0]], rel: 1, hideHigh: false}));
   const bands = [["€0 (apprenticeship)", 0, 1], ["€1 – 3,000", 1, 3000], ["€3,000 – 4,000", 3000, 4001], ["€4,001 – 6,000", 4001, 6001], ["€6,001 – 10,000", 6001, 10001], ["€10,001 – 15,000", 10001, 15001], ["over €15,000", 15001, 1e7]];
   bars("#chartFee", bands.map(([l, a, b]) => [l, can.filter(p => p.fee != null && p.fee >= a && p.fee < b).length, a, b]),
     d => goFind({status: ["eligible", "m2", "possible"], feeBand: [d[2], d[3]], rel: 1, hideHigh: false}));
@@ -657,6 +733,10 @@ function renderChecks() {
       <li><b>Entry level was misread.</b> In EEF, “Bac +4” / “Bac +5” is the level of the year you join (M1 = Bac+4, M2 = Bac+5), not the diploma you need. So “Bac +5” programs are M2 entry – a stretch for a 4-year BS, but not “needs a Master”. Years to finish were recalculated the same way.</li>
       <li><b>Exemption-policy updates</b> for Paris Cité, Grenoble Alpes and Tours (see “Fees &amp; exemptions”).</li>
       <li><b>Engineering-school fees</b>: €630 is the EU rate; most public engineering schools charge non-EU students €3,950.</li></ul></div>
+    <div class="card callout"><h3>Only programs you can apply to</h3>
+      <p style="margin:0">This site shows the ${META.count} programs (of ${META.allCount} relevant ones) that are open for 2027 at a level you can enter. Removed: ${META.excluded.map(e => `${e.n} ${esc(e.what.toLowerCase())}`).join(", ")}. Every course in Études en France is in the <a href="https://hiibrarahmad.github.io/france-full-catalogue/" target="_blank" rel="noopener">full catalogue</a>.</p></div>
+    <div class="card callout"><h3>English requirements</h3>
+      <p style="margin:0">Each program's catalogue text was scanned for IELTS, TOEFL, PTE, TOEIC, Cambridge and Duolingo, and for wording that accepts a Medium of Instruction (MOI) certificate. “MOI not mentioned” means the catalogue doesn't say – it is not a confirmed refusal, so ask the school.</p></div>
     <div class="card callout"><h3>3 · Official facts verified</h3><ul style="margin:0;padding-left:18px">
       <li>2026-27 fees: Master €3,950 non-EU / €255 EU; Licence €2,902 / €178 – service-public.gouv.fr (updated 20 Aug 2026).</li>
       <li>Decree 2026-385 (19 May 2026): exemption cap 30% → 25% (2027-28) → 20%.</li>
@@ -671,11 +751,82 @@ function renderChecks() {
 }
 
 /* ---------- tabs ---------- */
+/* ---------- email templates ---------- */
+const tplName = () => ($("#tplName").value || "").trim() || "[Your full name]";
+function emailFor(p, lang) {
+  const prog = p ? (lang === "fr" ? p.title : (p.en || p.title)) : (lang === "fr" ? "[nom de la formation]" : "[program name]");
+  const school = p ? [p.inst, p.uni].filter((x, i, a) => x && a.indexOf(x) === i).join(" – ") : (lang === "fr" ? "[établissement]" : "[school]");
+  if (lang === "fr") return {
+    subject: `Exonération des droits d'inscription – ${p ? p.title.slice(0, 80) : "Master"} – rentrée 2027`,
+    body: `Madame, Monsieur,
+
+Je suis de nationalité pakistanaise et je candidate via Études en France à la formation « ${prog} » (${school}) pour la rentrée de septembre 2027. Je suis titulaire d'une licence en 4 ans (Bac+4) et j'ai 3 ans d'expérience professionnelle comme ingénieur en systèmes embarqués dans les dispositifs biomédicaux (EEG, monitoring cardiaque).
+
+Pourriez-vous m'indiquer :
+1. Si je serai soumis(e) aux droits d'inscription différenciés (3 950 €/an) ou au tarif national ?
+2. Si votre établissement accorde des exonérations totales ou partielles aux étudiants extra-communautaires pour 2027-2028, ainsi que les critères et la date limite pour en faire la demande ?
+3. S'il existe des bourses (bourse d'excellence, IDEX, nomination à la bourse Eiffel) auxquelles je pourrais candidater ?
+4. Si je serai inscrit(e) en formation initiale (et non en formation continue), sachant que je travaille depuis l'obtention de mon diplôme ?
+
+Je vous remercie par avance pour votre réponse.
+
+Cordialement,
+${tplName()}`};
+  return {
+    subject: `Fee exemption question – ${p ? (p.en || p.title).slice(0, 80) : "Master's application"} – September 2027`,
+    body: `Dear Admissions / Scolarité team,
+
+I am a Pakistani citizen applying through Études en France for "${prog}" (${school}) for the September 2027 intake. I hold a 4-year bachelor's degree (Bac+4) and have 3 years of professional experience as an embedded systems engineer working on biomedical devices (EEG and cardiac monitoring).
+
+Could you please let me know:
+1. Will I be charged the differentiated tuition fee for non-EU students (€3,950 per year) or the national rate?
+2. Does your institution grant full or partial fee exemptions (exonération des droits d'inscription) to non-EU students in 2027-28, and what are the criteria and the deadline to request one?
+3. Are there scholarships I could apply for (excellence / IDEX scholarships, or a nomination for the Eiffel scholarship)?
+4. Would I be enrolled under "formation initiale" (not continuing education), given that I have been working since graduating?
+
+Thank you very much for your help.
+
+Kind regards,
+${tplName()}`};
+}
+const mailtoFor = (p, lang) => { const e = emailFor(p, lang); return `mailto:${encodeURIComponent(p.contact)}?subject=${encodeURIComponent(e.subject)}&body=${encodeURIComponent(e.body)}`; };
+function copyText(text, btn) {
+  const label = btn.textContent, done = m => { btn.textContent = m; setTimeout(() => btn.textContent = label, 2000); };
+  try { navigator.clipboard.writeText(text).then(() => done("Copied ✓"), () => done("Select & copy manually")); } catch { done("Select & copy manually"); }
+}
+document.addEventListener("click", e => {
+  const c = e.target.closest("[data-copy]"); if (c) { e.stopPropagation(); copyText(c.dataset.copy, c); return; }
+  const t = e.target.closest("[data-copytpl]");
+  if (t) { e.stopPropagation(); const p = byId.get(+t.dataset.copytpl), m = emailFor(p, "en"); copyText(`To: ${p.contact}\nSubject: ${m.subject}\n\n${m.body}`, t); }
+}, true);
+const tplLang = () => $("#tplFr").checked ? "fr" : "en";
+function renderTpl() { const m = emailFor(null, tplLang()); $("#tplText").value = `Subject: ${m.subject}\n\n${m.body}`; }
+function renderContact() {
+  const rows = ($("#cScopeShort").checked ? shortRows() : current).filter(p => p.contact);
+  const by = new Map();
+  rows.forEach(p => { const k = p.contact.toLowerCase(); if (!by.has(k)) by.set(k, []); by.get(k).push(p); });
+  const list = [...by.values()].sort((a, b) => b.length - a.length);
+  $("#contactTable").dataset.emails = list.map(ps => ps[0].contact).join(", ");
+  $("#contactTable").innerHTML = list.length ? `<table><thead><tr><th>Email (${list.length})</th><th>School</th><th>Programs (${rows.length})</th><th></th></tr></thead><tbody>${list.map(ps =>
+    `<tr><td><span class="sel">${esc(ps[0].contact)}</span></td><td>${esc(ps[0].uni || ps[0].inst)}<div class="small muted">${esc(ps[0].city)}</div></td>
+      <td>${ps.slice(0, 4).map(p => `<a href="#" data-open="${p.id}">${esc((p.en || p.title).slice(0, 70))}</a>`).join("<br>")}${ps.length > 4 ? `<div class="small muted">+ ${ps.length - 4} more</div>` : ""}</td>
+      <td style="white-space:nowrap"><a class="btn mini" href="${mailtoFor(ps[0], "en")}" target="_blank" rel="noopener">Email</a> <button class="btn mini" data-copy="${esc(ps[0].contact)}">Copy</button></td></tr>`).join("")}</tbody></table>`
+    : `<div class="empty">No emails for these programs. Change your search on “Find programs” or add programs to your shortlist.</div>`;
+  $$("#contactTable [data-open]").forEach(el => el.onclick = e => { e.preventDefault(); openDetail(+el.dataset.open); });
+}
+$$("[name=tplLang]").forEach(r => r.onchange = renderTpl);
+$("#tplName").value = store.get("tplName", "");
+$("#tplName").oninput = () => { renderTpl(); store.set("tplName", $("#tplName").value); };
+$("#copyTpl").onclick = e => copyText($("#tplText").value, e.currentTarget);
+$$("[name=cScope]").forEach(r => r.onchange = renderContact);
+$("#copyEmails").onclick = e => copyText($("#contactTable").dataset.emails || "", e.currentTarget);
+
 const rendered = {};
 function switchTab(t) {
   $$("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
   $$("main > section").forEach(s => s.hidden = s.id !== "tab-" + t);
   if (t === "short") renderShort();
+  if (t === "contact") { renderTpl(); renderContact(); }
   if (!rendered[t]) { ({overview: renderOverview, fees: renderFees, checks: renderChecks})[t]?.(); rendered[t] = 1; }
   store.set("tab", t); window.scrollTo(0, 0);
 }
