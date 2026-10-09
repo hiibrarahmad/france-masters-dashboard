@@ -1,8 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>France Masters 2027</title>
 <meta name="description" content="Interactive dashboard of Études en France master's and engineering programmes for an embedded / biomedical engineer, re-verified against the live catalogue.">
 <style>
@@ -47,7 +44,7 @@ body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-ap
 a{color:var(--accent-ink)}
 button,input,select{font:inherit;color:inherit}
 .wrap{max-width:1280px;margin:0 auto;padding:0 16px}
-header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
 .top{display:flex;align-items:center;gap:12px;padding:12px 0;flex-wrap:wrap}
 .top h1{font-size:18px;margin:0;font-weight:650;letter-spacing:-.01em}
 .top .sub{color:var(--muted);font-size:13px}
@@ -116,6 +113,8 @@ h2{font-size:20px;margin:0 0 4px} h3{font-size:16px;margin:0 0 8px}
 .btn{border:1px solid var(--border);background:var(--surface);border-radius:9px;padding:8px 14px;cursor:pointer;font-weight:550}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .empty{padding:40px;text-align:center;color:var(--muted)}
+.btn.danger{background:var(--bad-soft);border-color:var(--bad-dot);color:var(--bad)}
+.copybox{width:100%;height:120px;margin-top:8px;font:12px ui-monospace,monospace;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px}
 
 /* drawer */
 dialog{border:0;padding:0;border-radius:14px;max-width:760px;width:calc(100% - 24px);max-height:calc(100vh - 32px);background:var(--surface);color:var(--text)}
@@ -158,8 +157,6 @@ th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;
 footer{color:var(--muted);font-size:12.5px;text-align:center;padding:20px 16px 40px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
-</head>
-<body>
 <header>
   <div class="wrap">
     <div class="top">
@@ -213,7 +210,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding:20px 16px 4
           <span><span class="n" id="nRes">0</span> <span class="muted">programs match</span></span>
           <span class="muted small" id="activeHint"></span>
           <span style="flex:1"></span>
-          <button class="btn" id="exportRes">⬇ Export CSV</button>
+          <button class="btn" id="copyRes" title="Copy these programs as CSV – paste into Excel or Google Sheets">Copy CSV</button><button class="btn dl" id="exportRes">⬇ Download CSV</button>
         </div>
         <div class="list" id="list"></div>
         <button class="btn more" id="moreBtn" hidden>Show more</button>
@@ -225,7 +222,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding:20px 16px 4
   <section id="tab-short" hidden>
     <h2>My shortlist</h2>
     <p class="muted small">Tap ☆ on any program to add it here. Your list and notes are saved in this browser only. Export to keep a copy.</p>
-    <div class="searchrow"><button class="btn" id="exportShort">⬇ Export shortlist CSV</button><button class="btn" id="clearShort">Clear shortlist</button></div>
+    <div class="searchrow"><button class="btn" id="copyShort">Copy shortlist as CSV</button><button class="btn dl" id="exportShort">⬇ Download CSV</button><button class="btn" id="clearShort">Clear shortlist</button></div>
     <div class="card tablewrap tracker" id="shortTable"></div>
   </section>
 
@@ -566,22 +563,46 @@ function renderShort() {
   $$("[data-note]").forEach(el => el.oninput = () => { (notes[el.dataset.note] ||= {}).note = el.value; store.set("notes", notes); });
   $$("[data-open]").forEach(el => el.onclick = e => { e.preventDefault(); openDetail(+el.dataset.open); });
 }
-$("#clearShort").onclick = () => { if (confirm("Remove all programs from your shortlist?")) { star.clear(); store.set("shortlist", []); renderShort(); update(false); } };
+let clearArmed = 0;
+$("#clearShort").onclick = e => {
+  const b = e.currentTarget;
+  if (!clearArmed) { clearArmed = setTimeout(() => { clearArmed = 0; b.textContent = "Clear shortlist"; b.classList.remove("danger"); }, 4000); b.textContent = "Click again to clear all"; b.classList.add("danger"); return; }
+  clearTimeout(clearArmed); clearArmed = 0; b.textContent = "Clear shortlist"; b.classList.remove("danger");
+  star.clear(); store.set("shortlist", []); renderShort(); update(false);
+};
 
 /* ---------- CSV ---------- */
-function csv(rows, name) {
+function csvText(rows) {
   const cols = [["#", p => p.id], ["Program (EN)", p => p.en], ["Program (FR)", p => p.title], ["University", p => p.uni || p.inst], ["City", p => p.city],
     ["Field", p => p.field], ["Relevance", p => p.rel], ["Language", p => p.lang], ["Can I apply", p => STATUS[p.status].short], ["Fee/yr (€)", p => p.fee],
     ["With exemption (€)", p => p.low], ["Years", p => p.years], ["Total (€)", p => p.total], ["Deadline", p => p.deadline], ["School application too", p => p.extra ? "Yes" : "No"],
     ["Warnings", p => p.warn.filter(w => w.l !== "info").map(w => WARN_LABEL[w.c]).join("; ")], ["My stage", p => notes[p.id]?.stage || ""], ["My notes", p => notes[p.id]?.note || ""],
     ["EEF link", p => p.eef], ["Website", p => p.web]];
   const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
-  const text = "﻿" + [cols.map(c => q(c[0])).join(","), ...rows.map(p => cols.map(c => q(c[1](p))).join(","))].join("\r\n");
-  const a = Object.assign(document.createElement("a"), {href: URL.createObjectURL(new Blob([text], {type: "text/csv"})), download: name});
+  return [cols.map(c => q(c[0])).join(","), ...rows.map(p => cols.map(c => q(c[1](p))).join(","))].join("\r\n");
+}
+function download(rows, name) {
+  const a = Object.assign(document.createElement("a"), {href: URL.createObjectURL(new Blob(["﻿" + csvText(rows)], {type: "text/csv"})), download: name});
   a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
-$("#exportRes").onclick = () => csv(current, "france-masters-filtered.csv");
-$("#exportShort").onclick = () => csv([...star].map(id => byId.get(id)).filter(Boolean), "my-shortlist.csv");
+function copyRows(rows, btn) {
+  const text = csvText(rows), label = btn.textContent;
+  const done = msg => { btn.textContent = msg; setTimeout(() => btn.textContent = label, 2500); };
+  const fallback = () => {
+    let box = btn.parentElement.parentElement.querySelector(".copybox");
+    if (!box) { box = Object.assign(document.createElement("textarea"), {className: "copybox", readOnly: true}); box.setAttribute("aria-label", "CSV text"); btn.parentElement.after(box); }
+    box.value = text; box.focus(); box.select(); done("Select all + copy below");
+  };
+  try { navigator.clipboard.writeText(text).then(() => done(`Copied ${rows.length} rows ✓`), fallback); } catch { fallback(); }
+}
+const shortRows = () => [...star].map(id => byId.get(id)).filter(Boolean);
+$("#copyRes").onclick = e => copyRows(current, e.currentTarget);
+$("#copyShort").onclick = e => copyRows(shortRows(), e.currentTarget);
+$("#exportRes").onclick = () => download(current, "france-masters-filtered.csv");
+$("#exportShort").onclick = () => download(shortRows(), "my-shortlist.csv");
+// Shared/embedded pages block downloads, so offer the download button only when the page is opened directly.
+let framed = true; try { framed = window.self !== window.top; } catch {}
+if (framed) $$(".dl").forEach(b => b.hidden = true);
 
 /* ---------- overview ---------- */
 function bars(el, data, onClick, fmt = v => v) {
@@ -663,5 +684,3 @@ update(true);
 const t0 = store.get("tab", "find"); if (t0 !== "find") switchTab(t0);
 })();
 </script>
-</body>
-</html>

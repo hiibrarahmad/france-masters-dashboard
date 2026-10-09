@@ -4,7 +4,7 @@ An interactive dashboard of **999 master's / engineering / Mastère Spécialisé
 [Études en France](https://etudesenfrance.diplomatie.gouv.fr/catalogue-formations) catalogue that fit an
 embedded-systems / biomedical-device engineering profile, for the **September 2027** intake.
 
-**Open `index.html` in any browser** – no install needed.
+**Open `index.html` in any browser** – no install needed. Private online version: https://claude.ai/artifact/Dpmc2uaXaxRTcK5Pr3RigK (shared by invitation only).
 
 ## What it does
 
